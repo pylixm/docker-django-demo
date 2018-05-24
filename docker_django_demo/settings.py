@@ -83,10 +83,10 @@ WSGI_APPLICATION = 'docker_django_demo.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'docker_django_demo',
+        'NAME': 'mysitedb',
         'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': 'docker.for.mac.localhost',
+        'PASSWORD': '11111111',
+        'HOST': 'db',
         'PORT': 3306,
     }
 }
