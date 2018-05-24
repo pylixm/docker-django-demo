@@ -86,6 +86,7 @@ DATABASES = {
         'NAME': 'docker_django_demo',
         'USER': 'root',
         'PASSWORD': 'root',
+        # see https://stackoverflow.com/questions/24319662/from-inside-of-a-docker-container-how-do-i-connect-to-the-localhost-of-the-mach/24326540%2324326540
         'HOST': 'docker.for.mac.localhost',
         'PORT': 3306,
     }
