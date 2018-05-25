@@ -1,11 +1,13 @@
 version: '2'
 services:
   db:
-    image: mysql
+    image: mysql:5.7.4
     expose:
       - "3306"
     volumes:
       - ./db:/var/lib/mysql
+    ports:
+      - "127.0.0.1:3307:3306"
     environment:
       - MYSQL_DATABASE=mysitedb
       - MYSQL_ROOT_PASSWORD=11111111
@@ -17,5 +19,5 @@ services:
       - .:/code
     ports:
       - "8000:8000"
-    links:
+    depends_on:
       - db
