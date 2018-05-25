@@ -1,0 +1,45 @@
+version: '2'
+
+volumes:
+  staticfile: {}
+
+services:
+  db:
+    restart: always
+    image: mysql:5.7.4
+    volumes:
+      - ./db:/var/lib/mysql
+    # for test
+    # ports:
+    #  - "127.0.0.1:3307:3306"
+    #  # (HOST:CONTAINER)
+    env_file:
+      - .env
+
+  web:
+    restart: always
+    build: .
+    command: ["/bin/bash", "gunicorn.sh"]
+    # for test
+    # ports:
+    #  - "8000:8000"
+    #  # (HOST:CONTAINER)
+    volumes:
+      - .:/code
+      - ./staticfiles:/code/staticfiles
+      - ./log:/var/log/
+    depends_on:
+      - db
+
+  nginx:
+    restart: always
+    image: nginx:1.13.0
+    volumes:
+      - ./compose/nginx:/etc/nginx/conf.d/
+      - ./staticfiles:/code/staticfiles
+      - ./log:/var/log/nginx
+    ports:
+      - "80:80"
+      # (HOST:CONTAINER)
+    depends_on:
+      - web
