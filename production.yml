@@ -1,10 +1,8 @@
 version: '2'
 
-volumes:
-  staticfile: {}
-
 services:
   db:
+    # 当容器非正常退出后，尝试重启
     restart: always
     image: mysql:5.7.4
     volumes:
@@ -27,7 +25,7 @@ services:
     volumes:
       - .:/code
       - ./staticfiles:/code/staticfiles
-      - ./log:/var/log/
+      - ./logs:/var/log/
     depends_on:
       - db
 
@@ -37,7 +35,7 @@ services:
     volumes:
       - ./compose/nginx:/etc/nginx/conf.d/
       - ./staticfiles:/code/staticfiles
-      - ./log:/var/log/nginx
+      - ./logs:/var/log/nginx
     ports:
       - "80:80"
       # (HOST:CONTAINER)
