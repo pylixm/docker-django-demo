@@ -23,7 +23,6 @@ services:
     #  - "8000:8000"
     #  # (HOST:CONTAINER)
     volumes:
-      - .:/code
       - ./staticfiles:/code/staticfiles
       - ./logs:/var/log/
     depends_on:
