@@ -10,4 +10,10 @@ COPY . /code/
 RUN sed -i 's/\r//' gunicorn.sh \
     && chmod +x gunicorn.sh
 
+RUN sed -i 's/\r//' entrypoint.sh \
+    && chmod +x entrypoint.sh
 
+RUN sed -i 's/\r//' start.sh \
+    && chmod +x start.sh
+
+ENTRYPOINT ["/bin/bash", "entrypoint.sh"]

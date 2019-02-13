@@ -66,7 +66,7 @@ docker run -d -p 80:80  -v /Users/pylixm/myprojects/_Docker/docker_django_demo:/
   ​
 ### 实例3：使用docker-compose 部署django+mysql+gunicorn+nginx
 
-分支：[docker-compose](https://github.com/pylixm/docker-django-demo/tree/docker-compose-production)
+分支：[docker-compose-production](https://github.com/pylixm/docker-django-demo/tree/docker-compose-production)
 
 - 启动项目
 ```bash
@@ -82,3 +82,19 @@ docker-compose -f production.yml stop
 - restart: 参数作用，当容器非正常退出后，尝试重启。
 - depends_on: 依赖于哪些容器，除网络连通外，当这些容器启动后，才启动，但不会校验容器内服务是否启动，只检测容器。
 - link：直接关联容器，方便容器网络连通，不判断链接容器是否启动。
+
+
+### 实例4：使用docker-compose 部署django+mysql+celery+redis
+
+
+分支：[docker-compose-production2](https://github.com/pylixm/docker-django-demo/tree/docker-compose-production2)
+
+- 启动项目
+```bash
+docker-compose up
+```
+
+- 停止项目
+```bash
+docker-compose stop
+```

@@ -1,0 +1,68 @@
+version: '3'
+
+services:
+  # db:
+  #   image: postgres:9.6.5
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data/
+
+  db:
+    # 当容器非正常退出后，尝试重启
+    restart: always
+    image: mysql:5.7.4
+    volumes:
+      - ./db:/var/lib/mysql
+    # for test
+    ports:
+      - "127.0.0.1:3307:3306"
+    #  # (HOST:CONTAINER)
+    # env_file:
+    #  - .env
+    environment:
+      - MYSQL_DATABASE=mysitedb
+      - MYSQL_ROOT_PASSWORD=11111111
+
+  redis:
+    image: "redis:alpine"
+
+  web:
+    build: .
+    # command: /bin/bash -c "python /code/manage.py migrate --noinput && python /code/manage.py runserver 0.0.0.0:8000"
+    command: sh start.sh
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      - MYSQL_DATABASE=mysitedb
+      - MYSQL_ROOT_PASSWORD=11111111
+
+  celery:
+    build: .
+    command: celery -A docker_django_demo worker -l info
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - redis
+    environment:
+      - MYSQL_DATABASE=mysitedb
+      - MYSQL_ROOT_PASSWORD=11111111
+
+  celery-beat:
+    build: .
+    command: celery -A docker_django_demo beat -l info
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - redis
+    environment:
+      - MYSQL_DATABASE=mysitedb
+      - MYSQL_ROOT_PASSWORD=11111111
+
+volumes:
+  mysql_data:
