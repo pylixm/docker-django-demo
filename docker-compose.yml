@@ -1,68 +1,78 @@
-version: '3'
+version: '2'
 
 services:
-  # db:
-  #   image: postgres:9.6.5
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data/
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
 
   db:
-    # 当容器非正常退出后，尝试重启
     restart: always
-    image: mysql:5.7.4
+    image: mysql:5.7.19
     volumes:
+      - ./compose/mysql/:/etc/mysql/conf.d
       - ./db:/var/lib/mysql
     # for test
     ports:
       - "127.0.0.1:3307:3306"
-    #  # (HOST:CONTAINER)
-    # env_file:
-    #  - .env
-    environment:
-      - MYSQL_DATABASE=mysitedb
-      - MYSQL_ROOT_PASSWORD=11111111
-
-  redis:
-    image: "redis:alpine"
+      # (HOST:CONTAINER)
+    env_file:
+      - .env
 
   web:
-    build: .
-    # command: /bin/bash -c "python /code/manage.py migrate --noinput && python /code/manage.py runserver 0.0.0.0:8000"
-    command: sh start.sh
-    volumes:
-      - .:/code
+    # restart: always
+    build:
+      context: .
+      dockerfile: ./compose/web/Dockerfile
+    command: sh gunicorn.sh # ["/bin/bash", "gunicorn.sh"]
     ports:
-      - "8000:8000"
+      - "8080:8002"
+      # (HOST:CONTAINER)
+    volumes:
+      - ./logs:/var/logs/
+      - ./collect_static:/code/collect_static
+      - ./static:/code/static
+      - ./templates:/code/templates
+      - ./uploads:/code/uploads
+    env_file: .env
     depends_on:
-      - db
       - redis
-    environment:
-      - MYSQL_DATABASE=mysitedb
-      - MYSQL_ROOT_PASSWORD=11111111
+      - db
+
+  nginx:
+    restart: always
+    image: nginx:1.13.0
+    volumes:
+      - ./compose/nginx:/etc/nginx/conf.d/
+      - ./staticfiles:/code/staticfiles
+      - ./logs:/var/log/nginx
+    ports:
+      - "80:80"
+      # (HOST:CONTAINER)
+    depends_on:
+      - web
 
   celery:
-    build: .
-    command: celery -A docker_django_demo worker -l info
+    build:
+      context: .
+      dockerfile: ./compose/celery/Dockerfile
+    command: sh celery.sh
     volumes:
-      - .:/code
+      - ./logs:/var/logs/
+      - ./uploads:/code/uploads
     depends_on:
-      - db
       - redis
-    environment:
-      - MYSQL_DATABASE=mysitedb
-      - MYSQL_ROOT_PASSWORD=11111111
+      - db
+    env_file: .env
 
   celery-beat:
-    build: .
-    command: celery -A docker_django_demo beat -l info
+    build:
+      context: .
+      dockerfile: ./compose/celery/Dockerfile
+    command: sh celery-beat.sh
     volumes:
-      - .:/code
+      - ./logs:/var/logs/
     depends_on:
-      - db
       - redis
-    environment:
-      - MYSQL_DATABASE=mysitedb
-      - MYSQL_ROOT_PASSWORD=11111111
-
-volumes:
-  mysql_data:
+      - db
+    env_file: .env

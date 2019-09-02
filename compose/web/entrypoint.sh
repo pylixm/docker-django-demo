@@ -7,7 +7,7 @@ set -o pipefail
 # set -o nounset
 
 
-cmd="$@" # all params
+cmd="$@"
 
 # This entrypoint is used to play nicely with the current cookiecutter configuration.
 # Since docker-compose relies heavily on environment variables itself for configuration, we'd have to define multiple
@@ -22,10 +22,11 @@ cmd="$@" # all params
 # export DATABASE_URL=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/$POSTGRES_USER
 # export CELERY_BROKER_URL=$REDIS_URL/0
 
-echo $(date '+%Y-%m-%d %H:%M:%S')
-echo $MYSQL_ROOT_PASSWORD
+echo $MYSQL_PASSWORD
 echo $MYSQL_DATABASE
-echo $cmd
+echo $MYSQL_HOST
+echo $MYSQL_USER
+echo $MYSQL_PORT
 
 function mysql_ready(){
 python << END
@@ -45,5 +46,4 @@ until mysql_ready; do
 done
 
 >&2 echo "MySQL is up - continuing..."
-
 exec $cmd

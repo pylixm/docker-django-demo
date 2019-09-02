@@ -84,9 +84,9 @@ WSGI_APPLICATION = 'docker_django_demo.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mysitedb',
+        'NAME': 'demo',
         'USER': 'root',
-        'PASSWORD': '11111111',
+        'PASSWORD': 'Root1024',
         'HOST': 'db',
         'PORT': 3306,
     }
@@ -133,6 +133,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles/'
 
 
+# celery 配置
 CELERY_BROKER_URL = 'redis://redis:6379'
 CELERY_RESULT_BACKEND = 'redis://redis:6379'
 CELERY_ACCEPT_CONTENT = ['application/json']
